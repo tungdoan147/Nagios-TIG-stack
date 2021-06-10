@@ -34,11 +34,11 @@
 
 #### - Tạo user
 
-> 
-useradd nagios
-groupadd nagcmd
-usermod -a -G nagcmd nagios 
-usermod -a -G nagcmd apache
+>
+      useradd nagios
+      groupadd nagcmd
+      usermod -a -G nagcmd nagios 
+      usermod -a -G nagcmd apache
 
 `htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin`
 
@@ -48,26 +48,26 @@ usermod -a -G nagcmd apache
 #### - Cài đặt Nagios
 
 > 
-wget https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.1.1.tar.gz
-tar zxf nagios-4.1.1.tar.gz
-cd nagios-4.1.1
-./configure --with-command-group=nagcmd
-make all
-make install
-make install-init
-make install-config
-make install-commandmode
-make install-webconf
+      wget https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.1.1.tar.gz
+      tar zxf nagios-4.1.1.tar.gz
+      cd nagios-4.1.1
+      ./configure --with-command-group=nagcmd
+      make all
+      make install
+      make install-init
+      make install-config
+      make install-commandmode
+      make install-webconf
 
 - Download cài đặt Nagios plugins
 
 >
-wget http://www.nagios-plugins.org/download/nagios-plugins-2.1.1.tar.gz
-tar zxf nagios-plugins-2.1.1.tar.gz
-cd /tmp/nagios-plugins-2.1.1
-./configure --with-nagios-user=nagios --with-nagios-group=nagios --with-openssl
-make all
-make install
+     wget http://www.nagios-plugins.org/download/nagios-plugins-2.1.1.tar.gz
+     tar zxf nagios-plugins-2.1.1.tar.gz
+     cd /tmp/nagios-plugins-2.1.1
+     ./configure --with-nagios-user=nagios --with-nagios-group=nagios --with-openssl
+     make all
+     make install
 
 `systemctl start httpd` ( khởi động dịch vụ web)
 
@@ -103,33 +103,33 @@ Như vậy đã thiết lập xong server Nagios
 `
 
 >
- tar -xvf nagios-plugins-2.1.2.tar.gz
-cd nagios-plugins-2.1.2
-./configure
- make
- make install
+      tar -xvf nagios-plugins-2.1.2.tar.gz
+      cd nagios-plugins-2.1.2
+      ./configure
+      make
+      make install
  
  - Thêm user vào group, cấp quyền sử dụng tệp lưu NRPE cho user và group nagios
 
 >
-usermod -a -G nagios nagios
-chown nagios.nagios /usr/local/nagios
-chown -R nagios.nagios /usr/local/nagios/libexec
+     usermod -a -G nagios nagios
+     chown nagios.nagios /usr/local/nagios
+     chown -R nagios.nagios /usr/local/nagios/libexec
 
 - Cài đặt `xinetd` `yum install xinetd -y`
 - Download cài đặt NRPE
 
 >
-wget https://github.com/NagiosEnterprises/nrpe/releases/download/nrpe-3.2.1/nrpe-3.2.1.tar.gz
-tar xzf nrpe-3.2.1.tar.gz
-cd nrpe-3.2.1
-./configure
-make all 
-make install
-make install-plugin
-make install-config 
-make install-init
-make install-inetd
+     wget https://github.com/NagiosEnterprises/nrpe/releases/download/nrpe-3.2.1/nrpe-3.2.1.tar.gz
+     tar xzf nrpe-3.2.1.tar.gz
+     cd nrpe-3.2.1
+     ./configure
+     make all 
+     make install
+     make install-plugin
+     make install-config 
+     make install-init
+     make install-inetd
 
 - Truy nhập file  `/usr/local/nagios/etc/nrpe.cfg` 
 
@@ -144,9 +144,9 @@ make install-inetd
 - Khởi động dịch vụ 
 
 >
-service xinetd restart
-systemctl start nrpe 
-systemctl enable nrpe 
+    service xinetd restart
+    systemctl start nrpe 
+    systemctl enable nrpe 
 
 - Kiểm tra dịch vụ 
 
@@ -181,18 +181,18 @@ Như vậy là hoàn thiện các thao tác trên client
 Thêm vào file `/usr/local/nagios/etc/nagios.cfg` Khai báo thông tin các fiile chứa thông tin host
 
 >
-cfg_file=/usr/local/nagios/etc/hosts.cfg
-cfg_file=/usr/local/nagios/etc/services.cfg
+     cfg_file=/usr/local/nagios/etc/hosts.cfg
+     cfg_file=/usr/local/nagios/etc/services.cfg
 
 - Khai báo lệnh NRPE ở file `/usr/local/nagios/etc/objects/commands.cfg`
 
 >
-`###############################################################################`
-`# NRPE CHECK COMMAND`
-`#`
-`# Command to use NRPE to check remote host systems`
-`###############################################################################`
-`define command{`
+     `###############################################################################`
+     `# NRPE CHECK COMMAND`
+     `#`
+     `# Command to use NRPE to check remote host systems`
+     `###############################################################################`
+     `define command{`
        `command_name check_nrpe`
         `command_line $USER1$/check_nrpe -H $HOSTADDRESS$ -c $ARG1$`
         `}`
@@ -235,20 +235,20 @@ Như thế này là thiết lập hoàn thành. Vào Server Nagios sẽ thấy g
 `vi /etc/postfix/main.cf`
 
 >
-relayhost = [smtp.gmail.com]:587
-smtp_use_tls = yes
-smtp_sasl_auth_enable = yes
-smtp_sasl_security_options =
-smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
-smtp_tls_CAfile = /etc/ssl/certs/ca-bundle.crt
+     relayhost = [smtp.gmail.com]:587
+     smtp_use_tls = yes
+     smtp_sasl_auth_enable = yes
+     smtp_sasl_security_options =
+     smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+     smtp_tls_CAfile = /etc/ssl/certs/ca-bundle.crt
 
 - Thiết lập chế độ less secure của Gmail
 - Cấp quyền sử dụng vào đọc file chứa user passwd của mail mình sử dụng để gửi đến các mail cần nhận cảnh báo
 
 >
-chown root:postfix /etc/postfix/sasl_passwd*
-chmod 600 /etc/postfix/sasl_passwd
-postmap /etc/postfix/sasl_passwd
+    chown root:postfix /etc/postfix/sasl_passwd*
+    chmod 600 /etc/postfix/sasl_passwd
+    postmap /etc/postfix/sasl_passwd
 
 - Khởi động dịch vụ postfix
 
